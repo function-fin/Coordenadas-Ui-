@@ -1,0 +1,175 @@
+-- Serviços do Roblox SPWNCUB
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+
+-- Criando a ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "CoordenadasGUI_V1"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- Main Frame (Painel Principal - Reduzido e Compacto)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 290, 0, 155)
+MainFrame.Position = UDim2.new(0.5, -145, 0.5, -77)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Parent = ScreenGui
+
+-- Borda Branca Externa
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Color = Color3.fromRGB(255, 255, 255)
+UIStroke.Thickness = 2
+UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+UIStroke.Parent = MainFrame
+
+-- Símbolo de Fundo (Spawnismo Logo)
+local BackgroundIcon = Instance.new("ImageLabel")
+BackgroundIcon.Name = "BackgroundIcon"
+BackgroundIcon.Size = UDim2.new(0, 105, 0, 105)
+BackgroundIcon.Position = UDim2.new(0.5, -52, 0.5, -45)
+BackgroundIcon.BackgroundTransparency = 1
+BackgroundIcon.Image = "rbxassetid://85337967115080"
+BackgroundIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+BackgroundIcon.ImageTransparency = 0.93
+BackgroundIcon.ZIndex = 1
+BackgroundIcon.Parent = MainFrame
+
+-- Título: Coordenadas (Alinhado e Ajustado conforme a Imagem 2)
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Size = UDim2.new(1, -70, 0, 35)
+TitleLabel.Position = UDim2.new(0, 35, 0, 12)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "Coordenadas"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextSize = 34
+TitleLabel.Font = Enum.Font.Creepster
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Center -- Totalmente centralizado
+TitleLabel.ZIndex = 2
+TitleLabel.Parent = MainFrame
+
+-- Botão Fechar (X)
+local CloseButton = Instance.new("ImageButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 28, 0, 28)
+CloseButton.Position = UDim2.new(1, -38, 0, 15)
+CloseButton.BackgroundTransparency = 1
+CloseButton.Image = "rbxassetid://89783450460085"
+CloseButton.ZIndex = 2
+CloseButton.Parent = MainFrame
+
+-- Container das Coordenadas (X, Y, Z)
+local CoordLabel = Instance.new("TextLabel")
+CoordLabel.Name = "CoordLabel"
+CoordLabel.Size = UDim2.new(1, -40, 0, 55)
+CoordLabel.Position = UDim2.new(0, 20, 0, 52)
+CoordLabel.BackgroundTransparency = 1
+CoordLabel.Text = "X: -\nY: -\nZ: -"
+CoordLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+CoordLabel.TextSize = 16
+CoordLabel.Font = Enum.Font.SourceSansBold
+CoordLabel.LineHeight = 1.15
+CoordLabel.TextXAlignment = Enum.TextXAlignment.Center
+CoordLabel.ZIndex = 2
+CoordLabel.Parent = MainFrame
+
+-- Botão Copiar (Redimensionado proporcionalmente)
+local CopyButton = Instance.new("TextButton")
+CopyButton.Name = "CopyButton"
+CopyButton.Size = UDim2.new(0, 125, 0, 30)
+CopyButton.Position = UDim2.new(0.5, -62, 1, -38)
+CopyButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+CopyButton.Text = "Copiar"
+CopyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CopyButton.TextSize = 15
+CopyButton.Font = Enum.Font.SourceSansBold
+CopyButton.ZIndex = 2
+CopyButton.Parent = MainFrame
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 6)
+UICorner.Parent = CopyButton
+
+----------------------------------------------------------------
+-- XXXXXXXXXXXXXXXXXXXX SHHHHHHHHHH UWU 
+----------------------------------------------------------------
+
+local currentX, currentY, currentZ = 0, 0, 0
+
+-- Atualização em Tempo Real
+RunService.RenderStepped:Connect(function()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local pos = player.Character.HumanoidRootPart.Position
+        currentX = math.round(pos.X)
+        currentY = math.round(pos.Y)
+        currentZ = math.round(pos.Z)
+        
+        CoordLabel.Text = string.format("X:  %d\nY:  %d\nZ:  %d", currentX, currentY, currentZ)
+    else
+        CoordLabel.Text = "X: --\nY: --\nZ: --"
+    end
+end)
+
+-- Sistema de Cópia
+CopyButton.MouseButton1Click:Connect(function()
+    local textToCopy = string.format("%d, %d, %d", currentX, currentY, currentZ)
+    
+    if setclipboard then
+        setclipboard(textToCopy)
+    elseif toclipboard then
+        toclipboard(textToCopy)
+    end
+    
+    local originalText = CopyButton.Text
+    CopyButton.Text = "Copiado!"
+    CopyButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    task.wait(0.7)
+    CopyButton.Text = originalText
+    CopyButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+end)
+
+-- Fechar Interface
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Sistema de Arrastar (Mobile & PC)
+local dragging, dragInput, dragStart, startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+MainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
