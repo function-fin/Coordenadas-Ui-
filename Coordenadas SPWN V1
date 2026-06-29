@@ -1,4 +1,4 @@
--- Serviços do Roblox SPWNCUB
+-- Serviços do Roblox
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -7,16 +7,16 @@ local player = Players.LocalPlayer
 
 -- Criando a ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "CoordenadasGUI_V1"
+ScreenGui.Name = "CoordenadasGUI_V4"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Main Frame (Painel Principal - Reduzido e Compacto)
+-- Main Frame (Painel Principal)
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 290, 0, 155)
-MainFrame.Position = UDim2.new(0.5, -145, 0.5, -77)
+MainFrame.Size = UDim2.new(0, 290, 0, 180) -- Altura levemente ajustada para acomodar o texto maior
+MainFrame.Position = UDim2.new(0.5, -145, 0.5, -90)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -32,8 +32,8 @@ UIStroke.Parent = MainFrame
 -- Símbolo de Fundo (Spawnismo Logo)
 local BackgroundIcon = Instance.new("ImageLabel")
 BackgroundIcon.Name = "BackgroundIcon"
-BackgroundIcon.Size = UDim2.new(0, 105, 0, 105)
-BackgroundIcon.Position = UDim2.new(0.5, -52, 0.5, -45)
+BackgroundIcon.Size = UDim2.new(0, 110, 0, 110)
+BackgroundIcon.Position = UDim2.new(0.5, -55, 0.5, -45)
 BackgroundIcon.BackgroundTransparency = 1
 BackgroundIcon.Image = "rbxassetid://85337967115080"
 BackgroundIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
@@ -41,7 +41,7 @@ BackgroundIcon.ImageTransparency = 0.93
 BackgroundIcon.ZIndex = 1
 BackgroundIcon.Parent = MainFrame
 
--- Título: Coordenadas (Alinhado e Ajustado conforme a Imagem 2)
+-- Título: Coordenadas
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Name = "TitleLabel"
 TitleLabel.Size = UDim2.new(1, -70, 0, 35)
@@ -51,7 +51,7 @@ TitleLabel.Text = "Coordenadas"
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleLabel.TextSize = 34
 TitleLabel.Font = Enum.Font.Creepster
-TitleLabel.TextXAlignment = Enum.TextXAlignment.Center -- Totalmente centralizado
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Center
 TitleLabel.ZIndex = 2
 TitleLabel.Parent = MainFrame
 
@@ -65,26 +65,26 @@ CloseButton.Image = "rbxassetid://89783450460085"
 CloseButton.ZIndex = 2
 CloseButton.Parent = MainFrame
 
--- Container das Coordenadas (X, Y, Z)
+-- Container das Coordenadas e Direção (FONTE AUMENTADA)
 local CoordLabel = Instance.new("TextLabel")
 CoordLabel.Name = "CoordLabel"
-CoordLabel.Size = UDim2.new(1, -40, 0, 55)
-CoordLabel.Position = UDim2.new(0, 20, 0, 52)
+CoordLabel.Size = UDim2.new(1, -40, 0, 85) -- Espaço ampliado para o texto maior
+CoordLabel.Position = UDim2.new(0, 20, 0, 48)
 CoordLabel.BackgroundTransparency = 1
-CoordLabel.Text = "X: -\nY: -\nZ: -"
+CoordLabel.Text = "X: -\nY: -\nZ: -\nDir: -"
 CoordLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-CoordLabel.TextSize = 16
+CoordLabel.TextSize = 19 -- Fonte aumentada para melhor leitura no Mobile
 CoordLabel.Font = Enum.Font.SourceSansBold
-CoordLabel.LineHeight = 1.15
+CoordLabel.LineHeight = 1.1
 CoordLabel.TextXAlignment = Enum.TextXAlignment.Center
 CoordLabel.ZIndex = 2
 CoordLabel.Parent = MainFrame
 
--- Botão Copiar (Redimensionado proporcionalmente)
+-- Botão Copiar
 local CopyButton = Instance.new("TextButton")
 CopyButton.Name = "CopyButton"
 CopyButton.Size = UDim2.new(0, 125, 0, 30)
-CopyButton.Position = UDim2.new(0.5, -62, 1, -38)
+CopyButton.Position = UDim2.new(0.5, -62, 1, -35)
 CopyButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 CopyButton.Text = "Copiar"
 CopyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -98,28 +98,63 @@ UICorner.CornerRadius = UDim.new(0, 6)
 UICorner.Parent = CopyButton
 
 ----------------------------------------------------------------
--- XXXXXXXXXXXXXXXXXXXX SHHHHHHHHHH UWU 
+-- Lógica de Funcionamento e Conversão de Ângulo
 ----------------------------------------------------------------
 
 local currentX, currentY, currentZ = 0, 0, 0
+local currentDegrees = 0
+local currentDirectionLetter = "N"
+
+-- Função de conversão para bússola do Roblox
+local function getCompassDirection(hrp)
+    local lookVector = hrp.CFrame.LookVector
+    local angle = math.atan2(lookVector.X, lookVector.Z)
+    local degrees = math.deg(angle)
+    
+    degrees = (degrees + 180) % 360
+    
+    local dirLetter = "N"
+    if degrees >= 337.5 or degrees < 22.5 then
+        dirLetter = "S"
+    elseif degrees >= 22.5 and degrees < 67.5 then
+        dirLetter = "SO"
+    elseif degrees >= 67.5 and degrees < 112.5 then
+        dirLetter = "O"
+    elseif degrees >= 112.5 and degrees < 157.5 then
+        dirLetter = "NO"
+    elseif degrees >= 157.5 and degrees < 202.5 then
+        dirLetter = "N"
+    elseif degrees >= 202.5 and degrees < 247.5 then
+        dirLetter = "NE"
+    elseif degrees >= 247.5 and degrees < 292.5 then
+        dirLetter = "L"
+    elseif degrees >= 292.5 and degrees < 337.5 then
+        dirLetter = "SE"
+    end
+    
+    return math.round(degrees), dirLetter
+end
 
 -- Atualização em Tempo Real
 RunService.RenderStepped:Connect(function()
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local pos = player.Character.HumanoidRootPart.Position
+        local hrp = player.Character.HumanoidRootPart
+        local pos = hrp.Position
+        
         currentX = math.round(pos.X)
         currentY = math.round(pos.Y)
         currentZ = math.round(pos.Z)
+        currentDegrees, currentDirectionLetter = getCompassDirection(hrp)
         
-        CoordLabel.Text = string.format("X:  %d\nY:  %d\nZ:  %d", currentX, currentY, currentZ)
+        CoordLabel.Text = string.format("X:  %d\nY:  %d\nZ:  %d\nDir:  %d° (%s)", currentX, currentY, currentZ, currentDegrees, currentDirectionLetter)
     else
-        CoordLabel.Text = "X: --\nY: --\nZ: --"
+        CoordLabel.Text = "X: --\nY: --\nZ: --\nDir: --"
     end
 end)
 
 -- Sistema de Cópia
 CopyButton.MouseButton1Click:Connect(function()
-    local textToCopy = string.format("%d, %d, %d", currentX, currentY, currentZ)
+    local textToCopy = string.format("%d, %d, %d | Dir: %d° (%s)", currentX, currentY, currentZ, currentDegrees, currentDirectionLetter)
     
     if setclipboard then
         setclipboard(textToCopy)
