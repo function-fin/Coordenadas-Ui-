@@ -1,16 +1,13 @@
--- Serviços do Roblox
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 
--- Limpeza de instâncias anteriores para evitar duplicação
 if player.PlayerGui:FindFirstChild("CoordenadasGUI_SPWAM") then
     player.PlayerGui.CoordenadasGUI_SPWAM:Destroy()
 end
 
--- Criando a ScreenGui com Prioridade Máxima (Acima de qualquer UI do Brookhaven)
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "CoordenadasGUI_SPWAM"
 ScreenGui.ResetOnSpawn = false
@@ -18,9 +15,6 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 ScreenGui.DisplayOrder = 999999
 ScreenGui.Parent = player:WaitForChild("PlayerGui")
 
-----------------------------------------------------------------
--- BOTÃO EXTERNO (ABRIR / FECHAR)
-----------------------------------------------------------------
 local ToggleButton = Instance.new("ImageButton")
 ToggleButton.Name = "ToggleButton"
 ToggleButton.Size = UDim2.new(0, 50, 0, 50)
@@ -31,9 +25,6 @@ ToggleButton.Active = true
 ToggleButton.ZIndex = 100
 ToggleButton.Parent = ScreenGui
 
-----------------------------------------------------------------
--- PAINEL PRINCIPAL (MAIN FRAME)
-----------------------------------------------------------------
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 460, 0, 250)
@@ -55,16 +46,12 @@ UIStrokeMain.Thickness = 2
 UIStrokeMain.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 UIStrokeMain.Parent = MainFrame
 
-----------------------------------------------------------------
--- TOPO / CABEÇALHO
-----------------------------------------------------------------
 local TopBar = Instance.new("Frame")
 TopBar.Size = UDim2.new(1, 0, 0, 55)
 TopBar.BackgroundTransparency = 1
 TopBar.ZIndex = 51
 TopBar.Parent = MainFrame
 
--- Ícone do Sol (Topo Esquerdo)
 local IconSun = Instance.new("ImageLabel")
 IconSun.Size = UDim2.new(0, 36, 0, 36)
 IconSun.Position = UDim2.new(0, 14, 0, 10)
@@ -98,7 +85,6 @@ SubTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 SubTitleLabel.ZIndex = 52
 SubTitleLabel.Parent = TopBar
 
--- Botão Fechar Interno (X) - Encerra o script 100%
 local CloseButton = Instance.new("ImageButton")
 CloseButton.Name = "CloseButton"
 CloseButton.Size = UDim2.new(0, 32, 0, 32)
@@ -117,9 +103,6 @@ LineDivider1.BorderSizePixel = 0
 LineDivider1.ZIndex = 51
 LineDivider1.Parent = MainFrame
 
-----------------------------------------------------------------
--- SEÇÃO DE DADOS (X, Y, Z, DIR)
-----------------------------------------------------------------
 local DataContainer = Instance.new("Frame")
 DataContainer.Size = UDim2.new(1, -28, 0, 55)
 DataContainer.Position = UDim2.new(0, 14, 0, 63)
@@ -248,7 +231,16 @@ UIStrokeInput.Thickness = 1.5
 UIStrokeInput.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 UIStrokeInput.Parent = InputBoxFrame
 
--- Botão Copy Coordinates
+local ClearInputButton = Instance.new("ImageButton")
+ClearInputButton.Name = "ClearInputButton"
+ClearInputButton.Size = UDim2.new(0, 18, 0, 18)
+ClearInputButton.Position = UDim2.new(1, -24, 0.5, -9)
+ClearInputButton.BackgroundTransparency = 1
+ClearInputButton.Image = "rbxassetid://78774633521849"
+ClearInputButton.ImageColor3 = Color3.fromRGB(180, 180, 180)
+ClearInputButton.ZIndex = 54
+ClearInputButton.Parent = InputBoxFrame
+
 local CopyButton = Instance.new("TextButton")
 CopyButton.Name = "CopyButton"
 CopyButton.Size = UDim2.new(0, 190, 0, 36)
@@ -272,7 +264,6 @@ UIStrokeCopy.Thickness = 1.5
 UIStrokeCopy.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 UIStrokeCopy.Parent = CopyButton
 
--- Botão Realizar Teletransporte
 local TeleportButton = Instance.new("TextButton")
 TeleportButton.Name = "TeleportButton"
 TeleportButton.Size = UDim2.new(0, 190, 0, 42)
@@ -287,7 +278,6 @@ TeleportButton.ZIndex = 52
 TeleportButton.Parent = MainFrame
 
 local UICornerBtn = Instance.new("UICorner")
-UICornerMain.CornerRadius = UDim.new(0, 6)
 UICornerBtn.CornerRadius = UDim.new(0, 6)
 UICornerBtn.Parent = TeleportButton
 
@@ -296,10 +286,6 @@ UIStrokeBtn.Color = Color3.fromRGB(255, 255, 255)
 UIStrokeBtn.Thickness = 1.5
 UIStrokeBtn.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 UIStrokeBtn.Parent = TeleportButton
-
-----------------------------------------------------------------
--- LÓGICA DE FUNCIONAMENTO
-----------------------------------------------------------------
 
 local currentX, currentY, currentZ = 0, 0, 0
 local currentDegrees, currentDirectionLetter = 0, "N"
@@ -326,7 +312,6 @@ local function getCompassDirection(hrp)
     return math.round(degrees), dirLetter
 end
 
--- Atualização contínua das Coordenadas e CFrame
 local renderConnection
 renderConnection = RunService.RenderStepped:Connect(function()
     if not ScreenGui.Parent then
@@ -356,6 +341,10 @@ renderConnection = RunService.RenderStepped:Connect(function()
     end
 end)
 
+ClearInputButton.MouseButton1Click:Connect(function()
+    InputBoxFrame.Text = ""
+end)
+
 -- Copiar Coordenadas Completas (Incluindo Ângulo/Direção ou CFrame)
 CopyButton.MouseButton1Click:Connect(function()
     local textToCopy = string.format("%d, %d, %d | Dir: %d° (%s)", currentX, currentY, currentZ, currentDegrees, currentDirectionLetter)
@@ -372,7 +361,7 @@ CopyButton.MouseButton1Click:Connect(function()
     CopyButton.Text = origText
 end)
 
--- Lógica de Teletransporte Inteligente (Suporta CFrame completo, Ângulos ou Apenas X, Y, Z)
+-- Lógica de Teletransporte Inteligente
 TeleportButton.MouseButton1Click:Connect(function()
     local text = InputBoxFrame.Text
     if text == "" then return end
@@ -428,9 +417,6 @@ ToggleButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
 
-----------------------------------------------------------------
--- SISTEMA DE ARRASTAR (DRAG)
-----------------------------------------------------------------
 local function makeDraggable(guiElement)
     local dragging, dragStart, startPos
 
