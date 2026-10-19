@@ -169,9 +169,6 @@ LineDivider2.BorderSizePixel = 0
 LineDivider2.ZIndex = 51
 LineDivider2.Parent = MainFrame
 
-----------------------------------------------------------------
--- SEÇÃO DE TELETRANSPORTE E BOTÕES
-----------------------------------------------------------------
 local TeleportBar = Instance.new("Frame")
 TeleportBar.Size = UDim2.new(1, 0, 0, 35)
 TeleportBar.Position = UDim2.new(0, 0, 0, 130)
@@ -192,7 +189,7 @@ TeleportTitle.ZIndex = 52
 TeleportTitle.Parent = TeleportBar
 
 local TeleportSub = Instance.new("TextLabel")
-TeleportSub.Size = UDim2.new(0, 360, 0, 14)
+TeleportSub.Size = UDim2.new(0, 185, 0, 28)
 TeleportSub.Position = UDim2.new(0, 14, 0, 20)
 TeleportSub.BackgroundTransparency = 1
 TeleportSub.Text = "Cole as Coordenadas Abaixo :"
@@ -203,7 +200,16 @@ TeleportSub.TextXAlignment = Enum.TextXAlignment.Left
 TeleportSub.ZIndex = 52
 TeleportSub.Parent = TeleportBar
 
--- Caixa de Texto para Input
+local ClearInputButton = Instance.new("ImageButton")
+ClearInputButton.Name = "ClearInputButton"
+ClearInputButton.Size = UDim2.new(0, 28, 0, 28)
+ClearInputButton.Position = UDim2.new(0, 204, 0, 148)
+ClearInputButton.BackgroundTransparency = 1
+ClearInputButton.Image = "rbxassetid://78774633521849"
+ClearInputButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
+ClearInputButton.ZIndex = 52
+ClearInputButton.Parent = MainFrame
+
 local InputBoxFrame = Instance.new("TextBox")
 InputBoxFrame.Name = "InputBox"
 InputBoxFrame.Size = UDim2.new(0, 230, 0, 42)
@@ -231,16 +237,7 @@ UIStrokeInput.Thickness = 1.5
 UIStrokeInput.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 UIStrokeInput.Parent = InputBoxFrame
 
-local ClearInputButton = Instance.new("ImageButton")
-ClearInputButton.Name = "ClearInputButton"
-ClearInputButton.Size = UDim2.new(0, 18, 0, 18)
-ClearInputButton.Position = UDim2.new(1, -24, 0.5, -9)
-ClearInputButton.BackgroundTransparency = 1
-ClearInputButton.Image = "rbxassetid://78774633521849"
-ClearInputButton.ImageColor3 = Color3.fromRGB(180, 180, 180)
-ClearInputButton.ZIndex = 54
-ClearInputButton.Parent = InputBoxFrame
-
+-- Botão Copy Coordinates
 local CopyButton = Instance.new("TextButton")
 CopyButton.Name = "CopyButton"
 CopyButton.Size = UDim2.new(0, 190, 0, 36)
@@ -312,6 +309,7 @@ local function getCompassDirection(hrp)
     return math.round(degrees), dirLetter
 end
 
+-- Atualização contínua das Coordenadas e CFrame
 local renderConnection
 renderConnection = RunService.RenderStepped:Connect(function()
     if not ScreenGui.Parent then
@@ -341,6 +339,7 @@ renderConnection = RunService.RenderStepped:Connect(function()
     end
 end)
 
+-- Ação do Botão de Limpar (X)
 ClearInputButton.MouseButton1Click:Connect(function()
     InputBoxFrame.Text = ""
 end)
